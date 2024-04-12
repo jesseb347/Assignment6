@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Feedback Overview</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        @media only screen and (max-width: 600px) {
+            table { font-size: 12px; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+    <h1 class="text-xl font-bold mb-4">Project Feedback Overview</h1>
+    <table id="csvTable">
+        <thead>
+            <tr>
+                <th>Author</th>
+                <th>Project Summary</th>
+                <th>URL</th>
+                <th>CMMI Level</th>
+                <th>TRL Level</th>
+                <th>Comments</th>
+                <th>Questions</th>
+                <th>Recommendations</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <button onclick="downloadCSV()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Download CSV
+    </button>
+    <button onclick="downloadZip()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-2">
+        Download ZIP
+    </button>
+    <script>
+        // Load CSV data dynamically from Flask and display it in the table
+        function loadCSV() {
+            fetch('/get-csv-data')
+            .then(response => response.json())
+            .then(data => {
+                var tableHTML = "";
+                data.forEach(function(row) {
+                    tableHTML += "<tr>";
+                    tableHTML += "<td>" + row.author + "</td>";
+                    tableHTML += "<td>" + row.project_summary + "</td>";
+                    tableHTML += "<td><a href='" + row.URL + "' target='_blank'>Project Link</a></td>";
+                    tableHTML += "<td>" + row.CMMI_level + "</td>";
+                    tableHTML += "<td>" + row.TRL_level + "</td>";
+                    tableHTML += "<td>" + row.comments + "</td>";
+                    tableHTML += "<td>" + row.questions + "</td>";
+                    tableHTML += "<td>" + row.recommendations + "</td>";
+                    tableHTML += "</tr>";
+                });
+                document.getElementById('csvTable').getElementsByTagName('tbody')[0].innerHTML = tableHTML;
+            });
+        }
+
+        // Functions to handle file downloads
+        function downloadCSV() {
+            fetch('/download-csv').then(response => {
+                if (response.ok) return response.blob();
+                throw new Error('Network response was not ok.');
+            }).then(blob => {
+                let url = window.URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = url;
+                a.download = "projects_feedback.csv";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            }).catch(error => console.error('Download error:', error));
+        }
+
+        function downloadZip() {
+            fetch('/download-zip').then(response => {
+                if (response.ok) return response.blob();
+                throw new Error('Network response was not ok.');
+            }).then(blob => {
+                let url = window.URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = url;
+                a.download = "content.zip";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            }).catch(error => console.error('Download error:', error));
+        }
+
+        // Initialize table on page load
+        window.onload = loadCSV;
+    </script>
+</body>
+</html>
