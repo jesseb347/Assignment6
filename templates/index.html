@@ -12,6 +12,7 @@
         @media only screen and (max-width: 600px) {
             table { font-size: 12px; }
         }
+        video { width: 100%; max-width: 600px; margin-top: 20px; }
     </style>
 </head>
 <body class="bg-gray-100 p-4">
@@ -32,6 +33,10 @@
         <tbody>
         </tbody>
     </table>
+    <video controls>
+        <source src="" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
     <button onclick="downloadCSV()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
         Download CSV
     </button>
